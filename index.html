@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#111318" />
+<title>Compagnon Vitrail — CAP</title>
+<style>
+  :root{
+    --bg:#0b0d12; --panel:#141822; --panel2:#1b2130; --ink:#f6f1e8; --muted:#aeb7c6;
+    --lead:#2a2e36; --gold:#f3c969; --red:#d95a67; --blue:#5f8fe8; --green:#55b98a; --violet:#9a75dc;
+    --glassA:rgba(243,201,105,.24); --glassB:rgba(95,143,232,.22); --glassC:rgba(217,90,103,.22); --glassD:rgba(85,185,138,.20);
+    --radius:18px; --shadow:0 18px 60px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:
+    radial-gradient(circle at 15% 5%, rgba(95,143,232,.09), transparent 26%),
+    radial-gradient(circle at 85% 12%, rgba(217,90,103,.08), transparent 24%),
+    radial-gradient(circle at 60% 80%, rgba(243,201,105,.06), transparent 30%), var(--bg);
+    color:var(--ink); font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    min-height:100vh; }
+  button,input{font:inherit}
+  input{font-size:16px}
+  button{cursor:pointer;min-height:44px;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+  a{color:inherit}
+  .app{max-width:1180px;margin:0 auto;padding:18px 18px 110px}
+  .hero{position:relative;overflow:hidden;border:1px solid #2c3340;background:linear-gradient(145deg,#151a24,#0f1219);border-radius:26px;padding:26px;box-shadow:var(--shadow)}
+  .glass-grid{position:absolute;inset:-40px -30px auto auto;width:360px;height:260px;opacity:.95;transform:rotate(7deg);pointer-events:none}
+  .glass-grid span{position:absolute;border:7px solid #20242c;filter:drop-shadow(0 0 10px rgba(255,255,255,.04));clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+  .g1{width:150px;height:150px;right:34px;top:20px;background:linear-gradient(135deg,var(--glassB),var(--glassA))}
+  .g2{width:120px;height:120px;right:155px;top:82px;background:linear-gradient(135deg,var(--glassC),var(--glassD))}
+  .g3{width:96px;height:96px;right:0;top:135px;background:linear-gradient(135deg,var(--glassA),var(--glassC))}
+  .eyebrow{text-transform:uppercase;letter-spacing:.16em;font-size:.74rem;color:var(--gold);font-weight:800}
+  h1{font-size:clamp(2rem,6vw,4.6rem);line-height:.95;margin:8px 0 10px;max-width:760px}
+  .subtitle{max-width:720px;color:#c8cfda;font-size:1.03rem;line-height:1.55}
+  .powered{display:inline-flex;gap:8px;align-items:center;margin-top:18px;padding:8px 12px;border-radius:999px;background:#0d1016;border:1px solid #2e3542;font-size:.82rem;color:#d8dce5}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 18px var(--gold)}
+  .progress-wrap{margin-top:24px;max-width:760px}
+  .progress-meta{display:flex;justify-content:space-between;gap:10px;font-size:.86rem;color:#c5ccd8;margin-bottom:7px}
+  .progress{height:12px;border-radius:999px;background:#222735;overflow:hidden;border:1px solid #303747}
+  .progress > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--violet),var(--red),var(--gold));transition:width .5s ease}
+
+  .nav{position:sticky;top:10px;z-index:20;margin:18px 0;display:flex;gap:8px;overflow:auto;padding:8px;background:rgba(12,14,20,.86);backdrop-filter:blur(14px);border:1px solid #292f3b;border-radius:16px;scrollbar-width:none}
+  .nav button{border:0;background:transparent;color:#cdd3de;padding:10px 13px;border-radius:12px;white-space:nowrap}
+  .nav button.active,.nav button:hover{background:#222936;color:white}
+
+  .view{display:none}.view.active{display:block}
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+  .card{background:linear-gradient(160deg,var(--panel),#10141c);border:1px solid #2a3140;border-radius:var(--radius);padding:18px;box-shadow:0 8px 30px rgba(0,0,0,.18)}
+  .card h2,.card h3{margin:0 0 8px}
+  .card p{color:#c0c7d2;line-height:1.55}
+  .span7{grid-column:span 7}.span5{grid-column:span 5}.span12{grid-column:span 12}.span4{grid-column:span 4}.span8{grid-column:span 8}
+  .tag{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border-radius:999px;border:1px solid #343c4b;font-size:.75rem;color:#d1d7e1;margin:2px}
+  .tag.tech{box-shadow:inset 0 0 0 1px rgba(95,143,232,.16)} .tag.aa{box-shadow:inset 0 0 0 1px rgba(217,90,103,.16)} .tag.hda{box-shadow:inset 0 0 0 1px rgba(243,201,105,.16)}
+  .primary,.secondary,.ghost{border-radius:12px;padding:11px 14px;border:1px solid transparent;font-weight:750}
+  .primary{background:var(--ink);color:#101218}.secondary{background:#222936;color:#f5f5f6;border-color:#313a48}.ghost{background:transparent;color:#d8dde6;border-color:#343c49}
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .kpi{font-size:2.2rem;font-weight:850;line-height:1}.small{font-size:.84rem;color:var(--muted)}
+  .today-card{min-height:250px;position:relative;overflow:hidden}
+  .today-card:after{content:"";position:absolute;right:-55px;bottom:-65px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,rgba(95,143,232,.18),transparent 62%)}
+  .mini-list{display:grid;gap:10px;margin-top:12px}.mini{padding:12px;border-radius:12px;background:#10151e;border:1px solid #2a3140}
+  .mini strong{display:block;margin-bottom:3px}
+
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.filter.active{background:#f2eee6;color:#0e1117}
+  .module-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  .module{position:relative;overflow:hidden;min-height:230px;display:flex;flex-direction:column}
+  .module:before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:var(--accent,var(--blue))}
+  .module .month{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:#9da7b7}.module h3{font-size:1.05rem;margin-top:5px}.module p{font-size:.9rem;margin:8px 0 12px}
+  .module .foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px}.pill{font-size:.72rem;color:#bfc7d4;padding:4px 8px;border:1px solid #303846;border-radius:999px}
+  .module.done{outline:1px solid rgba(85,185,138,.55)}
+
+  .timeline{display:grid;gap:12px}.time-row{display:grid;grid-template-columns:130px 1fr;gap:14px}.time-date{font-weight:800;color:var(--gold);padding-top:13px}.time-content{padding:14px 16px;border-left:3px solid #31394a;background:#111620;border-radius:0 14px 14px 0}.time-content strong{display:block;margin-bottom:5px}.time-content small{color:#9fa9b9}
+
+  .quiz-shell{max-width:780px;margin:0 auto}.quizbox{padding:24px;border-radius:22px;background:linear-gradient(150deg,#171c27,#10131a);border:1px solid #313949;box-shadow:var(--shadow)}
+  .quiz-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.quiz-q{font-size:1.35rem;line-height:1.35;margin:20px 0}.answers{display:grid;gap:10px}.answer{width:100%;text-align:left;border:1px solid #343d4c;background:#131923;color:#edf0f5;padding:13px 14px;border-radius:12px}.answer:hover{background:#1d2532}.answer.correct{border-color:#55b98a;background:rgba(85,185,138,.13)}.answer.wrong{border-color:#d95a67;background:rgba(217,90,103,.1)}
+  .feedback{display:none;margin-top:16px;padding:14px;border-radius:12px;background:#0e131b;border:1px solid #303746;color:#d2d8e1;line-height:1.5}.feedback.show{display:block}
+  .quiz-next{display:none;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}.quiz-next.show{display:flex}.quiz-next .small{flex:1;min-width:180px}
+
+  .glossary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.term{padding:13px 14px;border-radius:14px;background:#11161f;border:1px solid #29313f}.term b{display:block;margin-bottom:4px}.term span{font-size:.9rem;color:#bfc7d4;line-height:1.4}
+  .search{width:100%;padding:13px 14px;border-radius:12px;border:1px solid #343d4c;background:#10151d;color:white;outline:none}
+
+  .modal{position:fixed;inset:0;background:rgba(3,5,8,.76);display:none;z-index:50;padding:18px;overflow:auto}.modal.open{display:block}.sheet{max-width:850px;margin:20px auto;background:#111620;border:1px solid #343d4d;border-radius:22px;padding:22px;box-shadow:var(--shadow)}
+  .sheet-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.sourcebox{display:none!important}.close{border:1px solid #384150;background:#171d27;color:white;width:38px;height:38px;border-radius:12px}.sheet h2{margin:0 0 5px}.sheet h4{margin:22px 0 8px}.notions{display:flex;flex-wrap:wrap;gap:7px}.checklist{display:grid;gap:8px}.check{display:flex;align-items:flex-start;gap:9px;padding:9px 10px;border-radius:10px;background:#0d1219}.check input{margin-top:4px}.sourcebox{font-size:.82rem;color:#aeb7c6;border-top:1px solid #2c3442;margin-top:20px;padding-top:14px}
+  footer{margin-top:30px;padding:20px 6px;color:#8f98a8;text-align:center;font-size:.8rem}
+  .notice{padding:12px 14px;border-left:3px solid var(--gold);background:#131821;border-radius:0 12px 12px 0;color:#c8cfda;font-size:.9rem;line-height:1.5}
+  .memory-principles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.principle{padding:14px;border-radius:14px;background:#10151d;border:1px solid #2c3341}.principle b{display:block;margin-bottom:6px}
+  .reset{color:#e7a3aa}
+  @media (max-width:850px){
+    .span7,.span5,.span8,.span4{grid-column:span 12}
+    .module-list{grid-template-columns:1fr 1fr}
+    .memory-principles{grid-template-columns:1fr 1fr}
+    .time-row{grid-template-columns:1fr}.time-date{padding-top:0}.glass-grid{opacity:.45}
+  }
+  @media (max-width:680px){
+    body{overscroll-behavior-y:none}
+    .app{padding:10px 10px calc(96px + env(safe-area-inset-bottom))}
+    .hero{padding:18px;border-radius:18px}
+    .hero h1{font-size:clamp(2.35rem,15vw,3.8rem)}
+    .subtitle{font-size:.94rem;line-height:1.48;max-width:92%}
+    .powered{align-items:flex-start;line-height:1.35;max-width:92%}
+    .progress-wrap{margin-top:20px}
+    .glass-grid{right:-128px;top:-18px;opacity:.35}
+    .nav{position:fixed;top:auto;bottom:8px;left:8px;right:8px;z-index:60;margin:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;padding:5px 4px calc(5px + env(safe-area-inset-bottom));overflow:visible;border-radius:18px;background:rgba(12,14,20,.94);box-shadow:0 12px 40px rgba(0,0,0,.48)}
+    .nav button{min-width:0;min-height:52px;padding:6px 2px;font-size:.64rem;line-height:1.05;white-space:normal;overflow:hidden}
+    .nav button::before{display:block;font-size:1.05rem;line-height:1;margin-bottom:4px;color:var(--gold)}
+    .nav button[data-view="home"]::before{content:"⌂"}
+    .nav button[data-view="year"]::before{content:"◇"}
+    .nav button[data-view="train"]::before{content:"↻"}
+    .nav button[data-view="timeline"]::before{content:"⌁"}
+    .nav button[data-view="glossary"]::before{content:"≡"}
+    .nav button[data-view="about"]::before{content:"i"}
+    .grid{gap:12px}
+    .card{padding:15px;border-radius:16px}
+    .module-list,.glossary,.memory-principles{grid-template-columns:1fr;gap:10px}
+    .module{min-height:0}
+    .filters{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;scrollbar-width:none}.filters::-webkit-scrollbar{display:none}.filters button{white-space:nowrap;flex:0 0 auto}
+    .quiz-shell{max-width:none}.quizbox{padding:16px;border-radius:17px}.quiz-head{align-items:flex-start}.quiz-q{font-size:1.18rem;margin:18px 0;line-height:1.4}.answer{min-height:54px;padding:14px 13px;font-size:1rem;line-height:1.35}.feedback{font-size:.94rem}.quiz-next{display:none}.quiz-next.show{display:grid;grid-template-columns:1fr;gap:8px}.quiz-next .small{min-width:0}.quiz-next .primary{width:100%}
+    .btnrow{display:grid;grid-template-columns:1fr;width:100%}.btnrow button{width:100%}
+    .timeline{gap:10px}.time-content{padding:13px 14px}
+    .modal{padding:0}.modal.open{display:flex;align-items:flex-end}.sheet{width:100%;max-height:94svh;overflow:auto;margin:0;border-radius:22px 22px 0 0;padding:17px 16px calc(24px + env(safe-area-inset-bottom))}.sheet-head{position:sticky;top:-17px;z-index:2;background:#111620;padding:17px 0 12px}.close{flex:0 0 44px;width:44px;height:44px}
+    .check{padding:11px}.check input{width:20px;height:20px}
+    footer{padding-bottom:8px}
+  }
+  @media (max-width:390px){
+    .nav button{font-size:.59rem}.nav{left:5px;right:5px;bottom:5px}.hero h1{font-size:2.5rem}.eyebrow{letter-spacing:.12em}.progress-meta{font-size:.79rem}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hero">
+    <div class="glass-grid" aria-hidden="true"><span class="g1"></span><span class="g2"></span><span class="g3"></span></div>
+    <div class="eyebrow">CAP Vitrail · compagnon annuel</div>
+    <h1>VITRAIL<br>EN MÉMOIRE</h1>
+    <div class="subtitle">Une application d’accompagnement, pas d’évaluation : revoir les notions vues en cours, retrouver les gestes, relier technique, arts appliqués et histoire de l’art, puis réactiver au bon moment.</div>
+    <div class="powered"><i class="dot"></i> Propulsé par <strong>Mariane Tardien, Artisane Vitrailliste</strong></div>
+    <div class="progress-wrap">
+      <div class="progress-meta"><span>Progression générale de l’année</span><strong id="progressText">0 %</strong></div>
+      <div class="progress" aria-label="Progression générale"><i id="progressBar"></i></div>
+      <div class="small" id="progressDetail" style="margin-top:7px">La barre avance avec les modules explorés et les réactivations effectuées — jamais avec une note.</div>
+    </div>
+  </header>
+
+  <nav class="nav" aria-label="Navigation">
+    <button class="active" data-view="home">Aujourd’hui</button>
+    <button data-view="year">L’année</button>
+    <button data-view="train">Réactiver</button>
+    <button data-view="timeline">Frise</button>
+    <button data-view="glossary">Glossaire</button>
+    <button data-view="about">Méthode</button>
+  </nav>
+
+  <main>
+    <section id="home" class="view active">
+      <div class="grid">
+        <div class="card span7 today-card">
+          <div class="eyebrow">Session courte · 5 à 8 min</div>
+          <h2>À revoir aujourd’hui</h2>
+          <p>Une petite séance de rappel mélange des notions anciennes, récentes et de domaines différents. Le but : récupérer l’information en mémoire avant de relire l’explication.</p>
+          <div id="todayPreview" class="mini-list"></div>
+          <div class="btnrow"><button class="primary" id="startToday">Lancer ma réactivation</button><button class="secondary" data-go="year">Voir l’année</button></div>
+        </div>
+        <div class="card span5">
+          <div class="eyebrow">Repères</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px">
+            <div><div class="kpi" id="modulesKpi">0</div><div class="small">modules explorés</div></div>
+            <div><div class="kpi" id="reviewsKpi">0</div><div class="small">réactivations</div></div>
+          </div>
+          <div class="notice" style="margin-top:18px">Ici, aucune moyenne, aucun classement, aucun « niveau ». Les réponses servent uniquement à choisir ce qui mérite d’être revu plus tard.</div>
+        </div>
+        <div class="card span4"><div class="eyebrow">Technique</div><h3>Le geste</h3><p>Tracé, calibrage, coupe, pige, sertissage, soudure, chemin de plomb, géométrie et fabrication.</p><button class="ghost filterJump" data-axis="tech">Explorer</button></div>
+        <div class="card span4"><div class="eyebrow">Arts appliqués</div><h3>La conception</h3><p>Formes, valeurs, composition, couleur, traduction d’image, projet et peinture sur verre.</p><button class="ghost filterJump" data-axis="aa">Explorer</button></div>
+        <div class="card span4"><div class="eyebrow">Histoire de l’art</div><h3>Les repères</h3><p>Des origines du verre aux vitraux contemporains, en reliant périodes, innovations et architecture.</p><button class="ghost filterJump" data-axis="hda">Explorer</button></div>
+      </div>
+    </section>
+
+    <section id="year" class="view">
+      <div class="card" style="margin-bottom:14px"><div class="eyebrow">Parcours annuel</div><h2>Retrouver un cours ou une notion</h2><p>Les trois enseignements sont volontairement entremêlés : la pratique donne du sens aux notions artistiques et historiques, et inversement.</p></div>
+      <div class="filters">
+        <button class="ghost filter active" data-filter="all">Tout</button><button class="ghost filter" data-filter="tech">Technique</button><button class="ghost filter" data-filter="aa">Arts appliqués</button><button class="ghost filter" data-filter="hda">Histoire de l’art</button><button class="ghost filter" data-filter="project">Projets</button>
+      </div>
+      <div id="moduleList" class="module-list"></div>
+    </section>
+
+    <section id="train" class="view">
+      <div class="quiz-shell">
+        <div class="quizbox">
+          <div class="quiz-head"><div><div class="eyebrow">Réactivation sans note</div><strong id="quizDomain">Mélange annuel</strong></div><div class="pill" id="quizCount">1 / 6</div></div>
+          <div class="quiz-q" id="quizQuestion">Chargement…</div>
+          <div class="answers" id="quizAnswers"></div>
+          <div class="feedback" id="quizFeedback"></div>
+          <div class="quiz-next" id="quizNextWrap">
+            <button class="primary" id="nextQuiz">Continuer</button>
+            <span class="small" id="reviewTiming"></span>
+          </div>
+          <div class="btnrow"><button class="ghost" id="skipQuiz">Changer de question</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="timeline" class="view">
+      <div class="card" style="margin-bottom:14px"><div class="eyebrow">Histoire de l’art</div><h2>Frise de repères</h2><p>Une lecture chronologique simple : période → innovation → conséquence sur le vitrail.</p></div>
+      <div id="timelineList" class="timeline"></div>
+    </section>
+
+    <section id="glossary" class="view">
+      <div class="card" style="margin-bottom:14px"><div class="eyebrow">Lexique vivant</div><h2>Glossaire du vitrail</h2><input id="glossSearch" class="search" placeholder="Chercher : grisaille, cive, pige, plomb…" /></div>
+      <div id="glossList" class="glossary"></div>
+    </section>
+
+    <section id="about" class="view">
+      <div class="card">
+        <div class="eyebrow">Apprendre durablement</div><h2>Pourquoi l’application fonctionne comme ça</h2>
+        <div class="memory-principles" style="margin-top:16px">
+          <div class="principle"><b>Récupération active</b><span class="small">On tente de répondre avant d’afficher le rappel.</span></div>
+          <div class="principle"><b>Espacement</b><span class="small">Une notion revient après plusieurs jours, puis plus tard.</span></div>
+          <div class="principle"><b>Entrelacement</b><span class="small">Technique, art et histoire peuvent apparaître dans la même session.</span></div>
+          <div class="principle"><b>Feedback immédiat</b><span class="small">La réponse est expliquée tout de suite, sans note.</span></div>
+        </div>
+        <h3 style="margin-top:24px">Principe de progression</h3>
+        <p>La progression générale reflète l’avancement dans le parcours et la régularité de réactivation. Elle ne mesure pas la valeur de l’étudiant et ne transforme pas les quiz en contrôle.</p>
+        <h3>Réactivation automatique</h3>
+        <p>Après chaque QCM, l’application planifie elle-même le prochain rappel. Une erreur revient rapidement ; les réponses justes sont progressivement espacées. L’étudiant n’a donc rien à noter ni à estimer lui-même.</p>
+        <div class="btnrow"><button class="ghost reset" id="resetProgress">Réinitialiser uniquement ma progression locale</button></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>Propulsé par <strong>Mariane Tardien, Artisane Vitrailliste</strong> · Données d’usage conservées uniquement dans ce navigateur.</footer>
+</div>
+
+<div class="modal" id="moduleModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="sheet">
+    <div class="sheet-head"><div><div class="eyebrow" id="modalAxis"></div><h2 id="modalTitle"></h2><div class="small" id="modalWhen"></div></div><button class="close" id="closeModal">×</button></div>
+    <p id="modalSummary"></p>
+    <h4>À retenir</h4><div class="notions" id="modalNotions"></div>
+    <h4>Parcours du module</h4><div class="checklist" id="modalChecklist"></div>
+    <div class="btnrow"><button class="primary" id="moduleReviewBtn">Réactiver ce module</button><button class="secondary" id="moduleSeenBtn">Marquer comme exploré</button></div>
+    <div class="sourcebox" id="modalSource"></div>
+  </div>
+</div>
+
+<script>
+const modules = [
+ {id:'tech-bases',axis:'tech',month:'Septembre',title:'Atelier : sécurité, matière et outils',summary:'Entrer dans l’atelier : EPI, règles, découverte du verre et première chaîne de fabrication.',notions:['EPI','outils de coupe','outils de tracé','calibrage','montage','soudure'],steps:['Identifier les règles de sécurité','Reconnaître les familles d’outils','Retrouver l’ordre général : tracer → calibrer → couper → monter → souder'],source:'Progression pratique : découverte et acquisition des bases avant le premier stage.'},
+ {id:'tech-carres',axis:'tech',month:'Septembre',title:'Vitrerie carrée : trame et pige',summary:'Construire une vitrerie régulière et comprendre comment une pige garantit la répétition des dimensions.',notions:['trame','pige','mesures panneau','coupe en série','montage'],steps:['Tracer une trame régulière','Comprendre le rôle d’une pige','Relier mesure, coupe et montage'],source:'Progression pratique : carrés, trame, fabrication de piges, montage.'},
+ {id:'tech-losanges',axis:'tech',month:'Septembre–octobre',title:'Losanges : géométrie et coupe en série',summary:'Calculer la largeur de bande, utiliser Pythagore/Thalès, débiter des bandes puis des losanges avec une pige.',notions:['demi-hauteur','demi-largeur','Pythagore','Thalès','largeur de bande','pige'],steps:['Identifier a = demi-hauteur et b = demi-largeur','Calculer c avec Pythagore','Retrouver le principe de proportion pour la largeur de bande','Comprendre la coupe à la pige'],source:'Cours « Losanges » + exercice vitrerie losangée.'},
+ {id:'tech-chemin-plomb',axis:'tech',month:'Septembre–octobre',title:'Chemin de plomb et ordre de montage',summary:'Lire un dessin de vitrerie comme une suite d’assemblages réalisables et préparer l’ordre du sertissage.',notions:['chemin de plomb','ordre de montage','plomb d’entourage','plomb intérieur'],steps:['Numéroter les pièces','Prévoir un ordre de montage logique','Distinguer entourage et plombs intérieurs'],source:'Exercice vitrerie losanges : chemin de plomb, numérotation et montage.'},
+ {id:'tech-cubes',axis:'tech',month:'Octobre',title:'Cubes : géométrie et onglets',summary:'Renforcer la précision du tracé, de la pige et du montage avec des motifs donnant une illusion de volume.',notions:['géométrie','coupe d’onglet','rythme de montage','précision'],steps:['Repérer les directions du motif','Maintenir la régularité des séries','Identifier les coupes d’onglet'],source:'Progression pratique : cubes, géométrie, chemin de plomb et coupe d’onglets.'},
+ {id:'tech-bornes',axis:'tech',month:'Octobre',title:'Bornes : machines, coupe et montage',summary:'Mettre en place des guides de coupe, comprendre le chemin de plomb et enchaîner les opérations avec régularité.',notions:['bornes','machines','coupe d’onglet','chemin de plomb','montage'],steps:['Repérer le tracé d’une borne','Comprendre le rôle des machines/guides','Préparer la coupe','Organiser le montage'],source:'Progression pratique : apprentissage du tracé, machines, coupe, onglets et montage des bornes.'},
+ {id:'tech-baie',axis:'tech project',month:'Novembre–décembre',title:'Baie cistercienne en groupe',summary:'Passer à une réalisation collective et articuler fabrication, filet de vue, assemblage et mise en situation.',notions:['travail collectif','filet de vue','scellement','coordination'],steps:['Lire la répartition des tâches','Contrôler la cohérence entre panneaux','Préparer les étapes de pose'],source:'Progression pratique : baie cistercienne en groupe, filet de vue / scellement.'},
+ {id:'tech-courbes',axis:'tech',month:'Janvier',title:'Vitrerie courbe et cubes déformés',summary:'Adapter les acquis de vitrerie régulière à des formes déformées et à des lignes moins orthogonales.',notions:['courbes','déformation','tracé','calibrage'],steps:['Observer les changements de direction','Adapter le tracé et les calibres','Conserver la logique de montage'],source:'Progression pratique : vitrerie courbes et cubes déformés.'},
+ {id:'tech-doubleborne',axis:'tech',month:'Mars',title:'Double borne',summary:'Réinvestir tracé, géométrie, coupe et chemin de plomb sur une composition plus complexe.',notions:['double borne','réinvestissement','précision','montage'],steps:['Décoder la trame','Anticiper les coupes','Planifier l’assemblage'],source:'Progression pratique : double borne.'},
+ {id:'tech-autonomie',axis:'tech project',month:'Mars–juin',title:'Projet, révisions et autonomie',summary:'Mobiliser les gestes déjà rencontrés dans un projet commun ou personnel puis préparer les situations de CCF.',notions:['analyse du travail','autonomie','révision ciblée','projet'],steps:['Identifier ce qui doit être réactivé','Planifier une réalisation','Contrôler tracé, coupe, montage et soudure'],source:'Progression pratique : projet commun et personnel, révisions, CCF blanc et CCF.'},
+
+ {id:'aa-intro',axis:'aa',month:'Septembre',title:'Introduction aux arts appliqués',summary:'Observer des maquettes et comprendre les fonctions, usages et contraintes du vitrail avant de créer.',notions:['fonction','usage','observation','motif','cohésion'],steps:['Observer avant de dessiner','Identifier fonction et usage','Relier idée et faisabilité'],source:'Progression Arts appliqués 2026-2027, séance 1.'},
+ {id:'aa-symboles',axis:'aa project',month:'Septembre–novembre',title:'Projet « Symboles »',summary:'Concevoir un vitrail 25 × 25 cm de 30 pièces maximum, depuis les recherches jusqu’à la présentation.',notions:['cahier des charges','croquis','maquette','calibrage','coupe','montage','soudure'],steps:['Recherches et croquis','Maquette','Tracé et report','Calibrage','Coupe et montage','Soudures et présentation'],source:'Progression Arts appliqués : projet Symboles, environ 39 h.'},
+ {id:'aa-agrandissement',axis:'aa',month:'Octobre',title:'Agrandissement au quadrillage',summary:'Reproduire un motif à une autre échelle en gardant proportions et repères.',notions:['quadrillage','proportions','échelle','repères'],steps:['Quadriller modèle et support','Reporter case par case','Vérifier proportions globales'],source:'Progression Arts appliqués : agrandissement – quadrillage.'},
+ {id:'aa-formes',axis:'aa',month:'Octobre',title:'Formes et motifs de base',summary:'Reproduire avec précision des formes géométriques et construire un vocabulaire graphique exploitable en vitrail.',notions:['formes géométriques','compas','règle','tracé précis','motif'],steps:['Identifier la construction d’une forme','Tracer proprement','Transformer une forme en motif'],source:'Progression Arts appliqués : formes et motifs de base.'},
+ {id:'aa-valeurs',axis:'aa',month:'Novembre',title:'Valeurs et ombres',summary:'Faire apparaître volume et relief par zones de valeur, dégradés et hachures.',notions:['valeur','ombre','volume','hachures','dégradé'],steps:['Repérer clair / moyen / sombre','Construire le volume','Comparer les effets de hachure et de dégradé'],source:'Progression Arts appliqués : valeurs et ombres, cubes/cylindres/sphères et « la main qui voit ».'},
+ {id:'aa-compo',axis:'aa',month:'Décembre',title:'Composition et perspective',summary:'Organiser les éléments dans l’espace et utiliser des repères de perspective dans une composition.',notions:['composition','hiérarchie','équilibre','perspective','espace'],steps:['Identifier le point focal','Répartir masses et vides','Construire une profondeur cohérente'],source:'Progression Arts appliqués : composition / perspective.'},
+ {id:'aa-image',axis:'aa',month:'Décembre',title:'Traduire une image en vitrail',summary:'Interpréter une image selon le langage du verre, du plomb et de la lumière : simplifier sans perdre l’intention.',notions:['grandes masses','lignes dominantes','simplification','réseau de plomb','contraintes de coupe','carton'],steps:['Analyser l’image','Simplifier les détails','Construire le réseau de plomb','Choisir verres et textures','Finaliser le carton'],source:'Cours « Traduire une image en vitrail ».'},
+ {id:'aa-couleur',axis:'aa',month:'Décembre',title:'Couleur et aquarelle',summary:'Comprendre les relations de couleur et travailler transparence, lavis, dégradés et superpositions.',notions:['couleur','transparence','lavis','dégradé','superposition'],steps:['Comparer teintes et contrastes','Tester la transparence','Construire un dégradé','Adapter une gamme à un projet'],source:'Progression Arts appliqués : couleur / aquarelle.'},
+ {id:'aa-oeuvre',axis:'aa project',month:'Janvier–juin',title:'Projet « Œuvre »',summary:'Projet long : recherche, maquette, tracé, coupe, décor, montage, soudure et présentation finale.',notions:['intention','maquette','décor','coupe','montage','présentation'],steps:['Recherche et maquette','Tracé / calibrage','Coupe','Décor','Montage / soudure','Présentation'],source:'Progression Arts appliqués : projet Œuvre, environ 64 h.'},
+ {id:'aa-peinture',axis:'aa',month:'Mars',title:'Initiation peinture sur verre',summary:'Comprendre la grisaille, sa préparation, le geste du pinceau et le principe de vitrification.',notions:['grisaille','pinceau fileur','préparation matière','vitrification','cuisson'],steps:['Observer des pièces témoins','Préparer la matière','Tester le geste','Relier matière et cuisson'],source:'Progression Arts appliqués : initiation peinture sur verre.'},
+ {id:'aa-flower',axis:'aa project',month:'Projet complémentaire',title:'Flower Power',summary:'Créer un vitrail libre de 350 mm maximum inspiré des années 70, de la recherche graphique jusqu’à la soudure.',notions:['motif floral','psychédélisme','aplats','contraste','40 pièces max','présentation'],steps:['Planche de recherche','Maquette à l’échelle 1/2','Tracé et calibrage','Coupe','Montage','Soudure et oral'],source:'Sujet « Flower Power » : 20 h, maximum 40 pièces.'},
+
+ {id:'hda-intro',axis:'hda',month:'Octobre',title:'Introduction et frise du vitrail',summary:'Installer les grands repères historiques et distinguer les fonctions du vitrail.',notions:['chronologie','fonction','architecture','lumière'],steps:['Situer les grandes périodes','Identifier les fonctions d’un vitrail','Construire une frise de base'],source:'Progression Histoire de l’art 2026-2027, séance du 2/10.'},
+ {id:'hda-antiquite',axis:'hda',month:'Octobre',title:'Antiquité et prémices du verre',summary:'Du verre naturel aux premiers objets fabriqués, puis au soufflage romain et aux premiers usages architecturaux.',notions:['obsidienne','glaçure','verre à noyau','soufflage à la canne','cive','claustra'],steps:['Distinguer verre naturel et fabriqué','Relier Égypte/Mésopotamie aux premières techniques','Comprendre l’apport du soufflage romain'],source:'Cours « Des origines au haut Moyen Âge » + progression HDA.'},
+ {id:'hda-medieval',axis:'hda',month:'Novembre',title:'Moyen Âge : roman et gothique',summary:'Comprendre l’essor du vitrail médiéval, la fonction spirituelle de la lumière et l’agrandissement des baies gothiques.',notions:['vitrail roman','gothique','lumière','iconographie','grisaille','jaune d’argent'],steps:['Comparer roman et gothique','Relier architecture et surface vitrée','Identifier les innovations de peinture sur verre'],source:'Progression HDA + Centre international du Vitrail.'},
+ {id:'hda-renaissance',axis:'hda',month:'Novembre',title:'Renaissance',summary:'Perspective, réalisme, palette enrichie et rapprochement progressif entre vitrail et peinture.',notions:['perspective','réalisme','émaux','gravure','camaïeu'],steps:['Identifier les nouveaux effets picturaux','Relier innovations techniques et évolution du style','Comparer à un vitrail médiéval'],source:'Progression HDA + Centre international du Vitrail.'},
+ {id:'hda-baroque',axis:'hda',month:'Décembre',title:'Baroque et classicisme',summary:'Suivre le déplacement vers davantage de clarté et la réduction du rôle de la couleur dans certaines vitreries.',notions:['clarté','verre blanc','bordure colorée','émail','classicisme'],steps:['Identifier les caractéristiques de la période','Comparer transparence et densité colorée','Situer l’évolution technique'],source:'Progression HDA + Centre international du Vitrail.'},
+ {id:'hda-19',axis:'hda',month:'Janvier',title:'XIXe siècle et néo-gothique',summary:'Redécouverte des formes médiévales, restauration, industrialisation et nouveaux débats sur l’art et l’artisanat.',notions:['néo-gothique','Viollet-le-Duc','restauration','industrialisation','vitrail décoratif'],steps:['Comparer médiéval et néo-gothique','Identifier le contexte de restauration','Relier industrie et production sur catalogue'],source:'Progression HDA + Centre international du Vitrail / V&A.'},
+ {id:'hda-artnouveau',axis:'hda',month:'Janvier–mars',title:'Art nouveau & Art déco',summary:'Observer comment le vitrail redevient un langage décoratif majeur, entre formes organiques puis géométriques.',notions:['Art nouveau','Tiffany','Gallé','Guimard','Art déco','géométrie'],steps:['Distinguer formes organiques et géométriques','Relier motifs, architecture et époque','Identifier des créateurs repères'],source:'Progression HDA 2026-2027.'},
+ {id:'hda-contemporain',axis:'hda',month:'Mars–juin',title:'XXe siècle et contemporain',summary:'Analyser des vitraux modernes et contemporains, y compris des démarches abstraites et des commandes pour l’architecture.',notions:['abstraction','Soulages','Chagall','Conques','lumière','architecture'],steps:['Décrire sans raconter','Relier matériau et lumière','Présenter une analyse orale courte'],source:'Progression HDA : vitrail moderne, Soulages/Conques, Chagall.'},
+ {id:'hda-synthese',axis:'hda project',month:'Janvier–juin',title:'Synthèse, mini-expo et bilan',summary:'Organiser les repères de l’année, présenter une période ou une œuvre et construire une synthèse personnelle.',notions:['synthèse','frise','oral','comparaison','auto-évaluation'],steps:['Choisir des repères significatifs','Construire une présentation claire','Relier style, technique et contexte'],source:'Progression HDA : mini-expo puis clôture / retour sur l’année.'}
+];
+
+const quiz = [
+ {id:'q1',module:'tech-losanges',axis:'tech',q:'Dans le cours sur les losanges, que représentent a et b ?',a:['a = demi-hauteur, b = demi-largeur','a = angle, b = largeur de plomb','a = aire, b = base'],c:0,fb:'Le cours définit a comme la demi-hauteur du losange et b comme sa demi-largeur. Ces deux valeurs servent au raisonnement géométrique pour déterminer la bande.'},
+ {id:'q2',module:'tech-losanges',axis:'tech',q:'Quelle relation permet de calculer l’hypoténuse c à partir de a et b ?',a:['c = a + b','c = √(a² + b²)','c = a × b'],c:1,fb:'C’est le théorème de Pythagore : c = √(a² + b²).'},
+ {id:'q3',module:'tech-losanges',axis:'tech',q:'Pourquoi utiliser une pige pour une série de losanges ?',a:['Pour colorer le verre','Pour répéter une même dimension de coupe avec régularité','Pour remplacer le plomb'],c:1,fb:'La pige sert de référence mécanique répétable : elle fait gagner du temps et améliore la régularité des séries.'},
+ {id:'q4',module:'tech-chemin-plomb',axis:'tech',q:'Le chemin de plomb sert surtout à…',a:['prévoir l’ordre de montage','choisir une époque historique','calculer une couleur'],c:0,fb:'Le chemin de plomb matérialise une logique d’assemblage : il aide à organiser l’ordre du sertissage.'},
+ {id:'q5',module:'tech-bases',axis:'tech',q:'Quel enchaînement correspond le mieux à la fabrication traditionnelle d’un panneau simple ?',a:['Couper → dessiner → souder → calibrer','Tracer → calibrer → couper → monter → souder','Souder → couper → tracer → monter'],c:1,fb:'La progression pratique installe très tôt cette chaîne : tracé, calibrage, coupe, montage puis soudure.'},
+ {id:'q6',module:'tech-losanges',axis:'tech',q:'Pour les demi-losanges, la troisième baguette est positionnée…',a:['au hasard selon la chute disponible','en retrait de la moitié du losange pour guider la roulette','sur le plomb d’entourage'],c:1,fb:'Le support indique qu’une troisième baguette est positionnée en retrait de la moitié du losange en respectant le trait de roulette.'},
+ {id:'q7',module:'tech-chemin-plomb',axis:'tech',q:'Dans l’exercice de vitrerie losangée, quel plomb est demandé pour l’entourage ?',a:['10 mm','5 mm','2 mm'],c:0,fb:'Le cahier des charges demande un plomb d’entourage de 10 mm et du 5 mm à l’intérieur.'},
+ {id:'q8',module:'tech-chemin-plomb',axis:'tech',q:'Dans l’exercice losanges, avant le calibrage il faut…',a:['décalquer le tracé','souder une face','poser le panneau'],c:0,fb:'Le cahier des charges place le calque avant le calibrage.'},
+ {id:'q9',module:'aa-image',axis:'aa',q:'Traduire une image en vitrail signifie d’abord…',a:['la copier trait pour trait','l’interpréter selon les contraintes du verre, du plomb et de la lumière','supprimer toutes les couleurs'],c:1,fb:'Le cours insiste sur l’interprétation : une image doit être adaptée au langage des formes découpées, du plomb et de la lumière.'},
+ {id:'q10',module:'aa-image',axis:'aa',q:'Avant de tracer le réseau de plomb, que faut-il repérer en priorité ?',a:['Les grandes masses et lignes dominantes','Le prix du verre','Le nombre de soudures finales'],c:0,fb:'Le cours commence par l’analyse des grandes masses, des directions dominantes et des zones problématiques.'},
+ {id:'q11',module:'aa-image',axis:'aa',q:'Pourquoi supprimer certains petits détails ?',a:['Parce qu’ils peuvent devenir illisibles ou techniquement irréalisables','Parce que le vitrail doit toujours être abstrait','Parce que le verre ne peut jamais être peint'],c:0,fb:'Les détails trop fins, petits fragments ou formes enchevêtrées peuvent être perdus sous le plomb ou devenir impossibles à couper.'},
+ {id:'q12',module:'aa-image',axis:'aa',q:'Quelle contrainte de coupe est explicitement recommandée ?',a:['Multiplier les angles rentrants','Éviter les angles rentrants','Toujours faire des courbes très serrées'],c:1,fb:'Le cours recommande d’éviter les angles rentrants, d’adoucir les courbes serrées et de maintenir une largeur minimale.'},
+ {id:'q13',module:'aa-image',axis:'aa',q:'Dans un carton final, laquelle de ces informations a sa place ?',a:['Le réseau de plomb et la numérotation des pièces','La météo du jour','La marque du téléphone'],c:0,fb:'Le carton final doit notamment comporter réseau de plombs, mise en couleur, numérotation éventuelle, indications de décor et échelle.'},
+ {id:'q14',module:'aa-image',axis:'aa',q:'La grisaille sert notamment à…',a:['ajouter ombres, volumes ou traits fins','faire fondre le plomb','mesurer une baie'],c:0,fb:'La peinture à la grisaille permet d’ajouter des ombres, volumes ou traits fins sur le verre.'},
+ {id:'q15',module:'aa-flower',axis:'aa',q:'Dans le sujet Flower Power, quel est le nombre maximal de pièces ?',a:['20','40','80'],c:1,fb:'Le cahier des charges fixe un maximum de 40 pièces.'},
+ {id:'q16',module:'aa-flower',axis:'aa',q:'Quelle échelle est demandée pour la maquette Flower Power ?',a:['1/2','1/10','2/1'],c:0,fb:'Le sujet demande une maquette à l’échelle 1/2.'},
+ {id:'q17',module:'aa-symboles',axis:'aa',q:'Quel est le format du projet « Symboles » ?',a:['25 × 25 cm, 30 pièces maximum','190 × 410 mm, 100 pièces','50 × 70 cm sans limite'],c:0,fb:'La progression Arts appliqués indique 25 × 25 cm et 30 pièces maximum.'},
+ {id:'q18',module:'aa-peinture',axis:'aa',q:'La grisaille est une peinture…',a:['vitrifiable','à l’huile non cuite','acrylique de protection'],c:0,fb:'Dans le vocabulaire du vitrail, la grisaille est une peinture vitrifiable à base de fondant et d’oxydes métalliques.'},
+ {id:'q19',module:'hda-antiquite',axis:'hda',q:'L’obsidienne est…',a:['un verre volcanique naturel','une peinture sur verre','un type de plomb'],c:0,fb:'L’obsidienne est un verre volcanique naturel, utilisé bien avant la fabrication du verre par l’être humain.'},
+ {id:'q20',module:'hda-antiquite',axis:'hda',q:'Qu’est-ce qu’une glaçure ?',a:['Une fine couche vitreuse sur une poterie','Une baguette de plomb','Une vitre romaine ronde'],c:0,fb:'La glaçure est une couche vitreuse qui peut imperméabiliser et décorer une poterie.'},
+ {id:'q21',module:'hda-antiquite',axis:'hda',q:'Le verre à noyau servait surtout à fabriquer…',a:['de petits vases et fioles colorés','de grandes verrières gothiques','des plombs laminés'],c:0,fb:'Le verre à noyau est adapté aux petits formats : flacons, fioles et objets décoratifs.'},
+ {id:'q22',module:'hda-antiquite',axis:'hda',q:'Quelle innovation est associée aux verriers syriens au Ier siècle av. J.-C. ?',a:['Le soufflage à la canne','Le jaune d’argent','La soudure électrique'],c:0,fb:'Le cours attribue l’invention du soufflage à la canne aux verriers syriens au Ier siècle av. J.-C.'},
+ {id:'q23',module:'hda-antiquite',axis:'hda',q:'Une cive est…',a:['un disque de verre aplati servant de vitre','un vase à parfum','une poudre de grisaille'],c:0,fb:'Dans le cours, la cive est définie comme un disque de verre aplati utilisé comme vitre.'},
+ {id:'q24',module:'hda-antiquite',axis:'hda',q:'Au Haut Moyen Âge, que permet la grisaille ?',a:['Dessiner des détails sur le verre puis les fixer par cuisson','Fabriquer du plomb','Découper sans outil'],c:0,fb:'La grisaille permet de peindre traits et détails sur le verre, puis de les fixer par cuisson.'},
+ {id:'q25',module:'hda-medieval',axis:'hda',q:'Dans l’architecture gothique, l’évolution des techniques de construction tend à…',a:['agrandir les baies et donner davantage de place au vitrail','supprimer toutes les fenêtres','remplacer le verre par du bois'],c:0,fb:'Le gothique agrandit les baies : le mur s’évide et les verrières prennent une place spectaculaire.'},
+ {id:'q26',module:'hda-medieval',axis:'hda',q:'Quelle innovation du XIVe siècle permet de colorer localement un verre sans multiplier les plombs ?',a:['Le jaune d’argent','La cive','Le noyau d’argile'],c:0,fb:'Le jaune d’argent apparaît au XIVe siècle et permet une coloration locale du verre.'},
+ {id:'q27',module:'hda-renaissance',axis:'hda',q:'À la Renaissance, le vitrail tend à…',a:['utiliser davantage perspective, réalisme et nuances','abandonner toute image figurative','revenir uniquement aux motifs géométriques mérovingiens'],c:0,fb:'Les sources décrivent des scènes plus réalistes, des visages plus expressifs et un perfectionnement de la perspective.'},
+ {id:'q28',module:'hda-baroque',axis:'hda',q:'Au XVIIe siècle, le goût pour davantage de clarté favorise…',a:['le verre blanc avec des bordures ou décors colorés','des verrières entièrement opaques','la disparition des ouvertures'],c:0,fb:'Le Centre international du Vitrail signale un goût pour les vitres blanches, parfois ornées de bordures colorées.'},
+ {id:'q29',module:'hda-19',axis:'hda',q:'Au XIXe siècle, le vitrail décoratif…',a:['connaît un retour et peut être produit de façon standardisée','disparaît complètement','n’est utilisé que pour des objets de table'],c:0,fb:'Le vitrail décoratif réapparaît au XIXe siècle avec des productions parfois industrialisées et vendues sur catalogue.'},
+ {id:'q30',module:'hda-artnouveau',axis:'hda',q:'Quel nom est un repère de l’Art nouveau dans la progression ?',a:['Tiffany','Pline l’Ancien','Thalès'],c:0,fb:'La progression cite notamment Gallé, Tiffany et Guimard comme repères liés à l’Art nouveau.'},
+ {id:'q31',module:'hda-contemporain',axis:'hda',q:'Quel site est associé au travail de Pierre Soulages dans la progression ?',a:['Conques','Pompéi','Ravenne'],c:0,fb:'La progression HDA propose l’étude de Soulages à Conques.'},
+ {id:'q32',module:'aa-image',axis:'aa',q:'Quel rôle les lignes de plomb jouent-elles dans la traduction d’une image ?',a:['Elles divisent, structurent et guident la lecture','Elles servent uniquement à décorer','Elles remplacent la lumière'],c:0,fb:'Le cours attribue aux lignes de plomb une fonction de division des surfaces, de soutien de la composition et de guidage visuel.'},
+ {id:'q33',module:'aa-image',axis:'aa',q:'Pour garder une lecture chromatique claire, le cours conseille de…',a:['limiter le nombre de teintes et travailler les contrastes','utiliser toutes les couleurs disponibles','éviter tout contraste'],c:0,fb:'La fiche recommande une gamme maîtrisée et des contrastes entre couleurs voisines pour préserver la lisibilité.'},
+ {id:'q34',module:'hda-antiquite',axis:'hda',q:'Selon la légende rapportée par Pline, le verre serait né du mélange de…',a:['sable, natron et chaleur','plomb, eau et argile','cuivre et calcaire'],c:0,fb:'La légende évoque du sable chauffé avec du natron ; le cours précise qu’il s’agit d’une légende qui rappelle les ingrédients de base.'},
+ {id:'q35',module:'hda-antiquite',axis:'hda',q:'Dans la Grèce antique présentée dans le cours, le verre architectural est…',a:['rare : l’accent est surtout mis sur architecture et lumière','déjà dominant dans les temples','utilisé sous forme de grandes roses'],c:0,fb:'Le cours souligne que la Grèce valorise la lumière mais n’emploie pas encore le verre comme matériau architectural majeur.'},
+ {id:'q36',module:'tech-chemin-plomb',axis:'tech',q:'Dans l’exercice de vitrerie losangée, quelle face doit être soudée ?',a:['uniquement la face interne','les deux faces dès la première étape','aucune'],c:0,fb:'Le cahier des charges de l’exercice demande de souder uniquement la face interne.'},
+ {id:'q37',module:'tech-carres',axis:'tech',q:'Dans la progression pratique, la vitrerie carrée sert notamment à découvrir…',a:['la trame et la coupe à la pige','la grisaille médiévale','la gravure sur verre'],c:0,fb:'La séquence « Carrés » associe tracé de vitrerie, trame, fabrication de piges, coupe à la pige et montage.'},
+ {id:'q38',module:'tech-cubes',axis:'tech',q:'Le travail sur les cubes prolonge notamment…',a:['la géométrie, le chemin de plomb et la coupe d’onglets','la fabrication du verre à noyau','l’aquarelle uniquement'],c:0,fb:'Dans la progression, les cubes sont liés à la suite de la géométrie, au chemin de plomb et aux coupes d’onglets.'},
+ {id:'q39',module:'tech-bornes',axis:'tech',q:'Dans la séquence « Bornes », quel élément est explicitement travaillé ?',a:['la mise en place de machines/guides','la peinture à l’huile','la fonte du plomb brut'],c:0,fb:'La progression mentionne la mise en place de machines, la coupe des bornes, les onglets, le chemin de plomb et le montage.'},
+ {id:'q40',module:'tech-baie',axis:'tech',q:'La baie cistercienne est prévue dans la progression comme…',a:['un travail de groupe','un exercice individuel de 15 minutes','un quiz d’histoire de l’art'],c:0,fb:'La progression indique explicitement « BAIE CISTERCIENNE EN GROUPE ».'},
+ {id:'q41',module:'tech-courbes',axis:'tech',q:'Le passage aux cubes déformés et à la vitrerie courbe demande surtout de…',a:['réinvestir les acquis de tracé et calibrage sur des formes moins régulières','abandonner le calibrage','ne travailler que la couleur'],c:0,fb:'Cette partie de l’année prolonge la vitrerie régulière vers des formes courbes et déformées.'},
+ {id:'q42',module:'tech-doubleborne',axis:'tech',q:'La « double borne » arrive dans la progression comme…',a:['une situation de réinvestissement plus complexe','la toute première découverte du verre','un cours d’Antiquité'],c:0,fb:'Elle intervient après les bases, les bornes simples et les vitraux courbes : elle mobilise donc plusieurs acquis.'},
+ {id:'q43',module:'tech-autonomie',axis:'tech',q:'En fin d’année, la progression pratique met davantage l’accent sur…',a:['projets, révisions et préparation des CCF','la seule découverte des outils','le verre naturel préhistorique'],c:0,fb:'La fin de progression comporte projets communs/personnels, révisions, CCF blanc puis CCF.'},
+ {id:'q44',module:'aa-intro',axis:'aa',q:'Lors de l’introduction aux arts appliqués, un objectif est de…',a:['identifier fonctions et usages du vitrail','apprendre la soudure sans dessin','mémoriser des dates sans observer d’images'],c:0,fb:'La première séance vise notamment à identifier fonctions et usages du vitrail, observer un motif et créer une cohésion de groupe.'},
+ {id:'q45',module:'aa-agrandissement',axis:'aa',q:'Le quadrillage sert principalement à…',a:['reproduire un motif à une autre échelle en conservant ses proportions','faire fondre la grisaille','calculer la température du four'],c:0,fb:'La séance « Agrandissement – quadrillage » a pour objectif de reproduire un motif à plus grande échelle.'},
+ {id:'q46',module:'aa-formes',axis:'aa',q:'Dans « Formes et motifs de base », quels outils sont explicitement mobilisés ?',a:['crayon, règle, compas et papier','fer à souder seulement','canne de soufflage'],c:0,fb:'La progression cite crayon, règle, compas et papier pour reproduire des formes géométriques simples.'},
+ {id:'q47',module:'aa-valeurs',axis:'aa',q:'Le travail des valeurs et des ombres sert à…',a:['rendre volumes et reliefs','choisir l’ordre des périodes historiques','mesurer la largeur d’un plomb'],c:0,fb:'La progression associe valeurs, ombres, dégradés et hachures à la reproduction des volumes et reliefs.'},
+ {id:'q48',module:'aa-compo',axis:'aa',q:'Une composition visuelle concerne d’abord…',a:['l’organisation des éléments dans l’espace','la température de fusion du verre','la fabrication industrielle du plomb'],c:0,fb:'La séance composition/perspective vise à organiser les éléments dans l’espace et à mettre en pratique des repères de perspective.'},
+ {id:'q49',module:'aa-couleur',axis:'aa',q:'Dans la séance couleur/aquarelle, quelles notions pratiques sont travaillées ?',a:['lavis, dégradés, superpositions et transparence','chemin de plomb uniquement','soufflage romain'],c:0,fb:'La progression mentionne lavis, dégradés, superpositions et gestion de la transparence.'},
+ {id:'q50',module:'aa-oeuvre',axis:'aa',q:'Le projet « Œuvre » se distingue surtout par…',a:['un parcours long allant de la recherche à la présentation','un simple quiz de 10 minutes','l’absence de fabrication'],c:0,fb:'Le projet « Œuvre » s’étend sur de nombreuses séances : recherches, maquette, tracé, calibrage, coupe, décor, montage et présentation.'},
+ {id:'q51',module:'hda-intro',axis:'hda',q:'La première séance d’histoire de l’art demande notamment de…',a:['construire une frise chronologique de base','réaliser une soudure','fabriquer une pige'],c:0,fb:'La progression HDA débute par une introduction et une frise collective des grands jalons du vitrail.'},
+ {id:'q52',module:'hda-synthese',axis:'hda',q:'La mini-expo de synthèse sert surtout à…',a:['synthétiser et vulgariser les connaissances acquises','noter la vitesse de coupe','remplacer toutes les séances précédentes'],c:0,fb:'La progression indique comme compétences la synthèse des connaissances et leur vulgarisation.'},
+ {id:'q53',module:'aa-image',axis:'aa',q:'Une grande pièce de verre trop fragile doit plutôt être…',a:['reconsidérée dans la répartition du réseau','conservée à tout prix','percée systématiquement'],c:0,fb:'Le cours recommande une répartition équilibrée, en évitant les grandes pièces fragiles et les très petits fragments.'},
+ {id:'q54',module:'aa-peinture',axis:'aa',q:'Pourquoi la grisaille doit-elle être cuite ?',a:['pour fixer durablement le décor vitrifiable au verre','pour ramollir le plomb','pour rendre le verre opaque par principe'],c:0,fb:'La grisaille est une peinture vitrifiable : la cuisson permet au fondant de s’incorporer au verre.'},
+ {id:'q55',module:'hda-medieval',axis:'hda',q:'Les « murs de lumière » du gothique sont rendus possibles par…',a:['des baies plus grandes et une place accrue du vitrail','des murs entièrement aveugles','l’abandon de la structure architecturale'],c:0,fb:'Le développement gothique agrandit les baies et donne au vitrail une place sans précédent.'},
+ {id:'q56',module:'hda-renaissance',axis:'hda',q:'L’apparition des émaux à la Renaissance a notamment pour effet de…',a:['élargir la palette picturale sur le verre','supprimer toute cuisson','remplacer le verre par du métal'],c:0,fb:'Les émaux enrichissent la palette du peintre-verrier, même si leur emploi peut aussi réduire la transparence.'},
+ {id:'q57',module:'hda-19',axis:'hda',q:'Le néo-gothique du XIXe siècle renvoie à…',a:['une redécouverte et réinterprétation des formes médiévales','une technique de soufflage antique','un style exclusivement abstrait'],c:0,fb:'Le néo-gothique se nourrit d’une redécouverte des formes et de l’art religieux médiévaux.'},
+ {id:'q58',module:'hda-artnouveau',axis:'hda',q:'Dans la progression, l’Art déco est associé à des principes de…',a:['géométrie et sobriété','uniquement formes végétales sinueuses','vitraux mosaïques mérovingiens'],c:0,fb:'La progression HDA mentionne explicitement les principes Art déco de géométrie et de sobriété.'},
+ {id:'q59',module:'hda-contemporain',axis:'hda',q:'Pour analyser un vitrail contemporain, il est utile de relier…',a:['matière, lumière, composition et architecture','uniquement la date','uniquement le prix du verre'],c:0,fb:'La progression demande l’analyse d’un vitrail moderne ; l’enjeu est de relier choix plastiques, lumière et contexte architectural.'},
+ {id:'q60',module:'tech-bases',axis:'tech',q:'Pourquoi la régularité du geste est-elle importante en vitrerie ?',a:['elle contribue à la précision et à la répétabilité de la fabrication','elle sert seulement à aller plus vite','elle remplace les mesures'],c:0,fb:'Les progressions insistent sur l’acquisition et la répétition du geste pour gagner en précision et en régularité.'}
+];
+
+const timeline = [
+ ['Préhistoire','Verres naturels : obsidienne, tectites, fulgurites. Le verre est d’abord utilisé avant d’être fabriqué.'],
+ ['Égypte & Mésopotamie','Glaçures, premiers objets en verre, verre à noyau ; production d’objets précieux et colorés.'],
+ ['Grèce antique','Le verre reste surtout un objet de luxe ; le rapport architecture–lumière est central.'],
+ ['Rome','Soufflage à la canne ; diffusion du verre ; vitres translucides, claustras et cives.'],
+ ['Haut Moyen Âge','Fragments colorés dans les églises ; vitraux mosaïques ; développement de la grisaille.'],
+ ['XIe–XIIIe siècles','Essor roman puis gothique ; maîtrise technique, iconographie complexe, grandes verrières et roses.'],
+ ['XIVe–XVe siècles','Jaune d’argent, verre blanc plus clair, sanguine, gravure et perfectionnement de la perspective.'],
+ ['Renaissance','Réalisme accru, perspective, émaux et raffinement pictural ; rapprochement avec la peinture.'],
+ ['XVIIe–XVIIIe siècles','Recherche de clarté, verre blanc plus présent et recul du vitrail coloré dans certains contextes.'],
+ ['XIXe siècle','Retour du vitrail décoratif, néo-gothique, restaurations et production parfois industrialisée.'],
+ ['Art nouveau / Art déco','Renouveau décoratif : formes organiques puis géométriques, nouveaux liens entre architecture et arts décoratifs.'],
+ ['XXe–XXIe siècles','Développement de démarches modernes et abstraites ; le vitrail dialogue avec l’architecture contemporaine.']
+];
+
+const glossary = [
+ ['Calibrage','Transformation du tracé en gabarits servant à préparer la coupe des pièces.'],
+ ['Carton','Dessin de référence à l’échelle du vitrail, avec réseau de plomb, informations de couleur et indications techniques.'],
+ ['Cive','Disque de verre aplati utilisé historiquement comme élément de vitrage.'],
+ ['Claustra','Paroi ajourée dont les vides peuvent recevoir des éléments de verre.'],
+ ['Émail','Couleur vitrifiable appliquée sur le verre puis fixée par cuisson.'],
+ ['Glaçure','Fine couche vitreuse déposée sur une poterie pour l’imperméabiliser et/ou la décorer.'],
+ ['Grisaille','Peinture vitrifiable à base de fondant et d’oxydes métalliques utilisée pour le trait et le modelé.'],
+ ['Jaune d’argent','Coloration vitrifiable permettant d’obtenir du jaune à orangé localement sur le verre.'],
+ ['Maquette','Esquisse préparatoire qui organise composition, couleurs et lignes principales du futur vitrail.'],
+ ['Pige','Gabarit ou butée servant à répéter une dimension de coupe de façon régulière.'],
+ ['Plomb d’entourage','Profil de plomb qui forme la périphérie du panneau.'],
+ ['Réseau de plomb','Organisation des lignes de plomb qui relient les pièces et structurent visuellement le vitrail.'],
+ ['Sertissage','Assemblage des pièces de verre dans les baguettes de plomb.'],
+ ['Soufflage à la canne','Technique de mise en forme du verre fondu en soufflant dans une canne creuse.'],
+ ['Vergette','Tringle métallique participant au maintien d’un panneau de vitrail.'],
+ ['Verre à noyau','Technique ancienne où le verre est formé autour d’un noyau, ensuite retiré.'],
+ ['Vitrail mosaïque','Assemblage de petits morceaux de verre coloré, généralement non figuratif dans le contexte du cours sur le Haut Moyen Âge.'],
+ ['Chemin de plomb','Ordre logique prévu pour assembler progressivement les pièces lors de la mise en plomb.'],
+ ['Pince à gruger','Outil permettant de rogner légèrement le bord d’une pièce de verre pour l’ajuster.'],
+ ['Rabattoir','Outil servant à rabattre les ailes du plomb sur le verre.']
+];
+
+const state = JSON.parse(localStorage.getItem('vitrailCompagnonV1') || '{"seen":[],"reviews":{},"reviewCount":0,"steps":{}}');
+state.seen = Array.isArray(state.seen) ? state.seen : [];
+state.reviews = state.reviews && typeof state.reviews === 'object' ? state.reviews : {};
+state.reviewCount = Number(state.reviewCount || 0);
+state.steps = state.steps && typeof state.steps === 'object' ? state.steps : {};
+function save(){localStorage.setItem('vitrailCompagnonV1',JSON.stringify(state)); renderProgress();}
+function axisLabel(a){return a.includes('tech')?'Technique':a.includes('aa')?'Arts appliqués':'Histoire de l’art'}
+function axisColor(a){return a.includes('tech')?'var(--blue)':a.includes('aa')?'var(--red)':'var(--gold)'}
+function moduleById(id){return modules.find(m=>m.id===id)}
+
+function renderProgress(){
+  const seenCount = new Set(state.seen).size;
+  const reviewedUnique = Object.keys(state.reviews).filter(id=>quiz.some(q=>q.id===id)).length;
+  const moduleRatio = modules.length ? seenCount/modules.length : 0;
+  const reviewRatio = quiz.length ? reviewedUnique/quiz.length : 0;
+  const raw = Math.min(100, Math.round((moduleRatio*.72 + reviewRatio*.28)*100));
+  document.getElementById('progressBar').style.width=raw+'%';
+  document.getElementById('progressText').textContent=raw+' %';
+  document.getElementById('progressDetail').textContent=`${seenCount}/${modules.length} modules explorés · ${reviewedUnique}/${quiz.length} notions déjà réactivées`;
+  document.getElementById('modulesKpi').textContent=seenCount;
+  document.getElementById('reviewsKpi').textContent=state.reviewCount||0;
+  document.querySelectorAll('.module').forEach(el=>el.classList.toggle('done',state.seen.includes(el.dataset.id)));
+}
+
+function renderModules(filter='all'){
+ const box=document.getElementById('moduleList'); box.innerHTML='';
+ modules.filter(m=>filter==='all'||m.axis.includes(filter)).forEach(m=>{
+   const el=document.createElement('article'); el.className='card module'+(state.seen.includes(m.id)?' done':''); el.dataset.id=m.id; el.style.setProperty('--accent',axisColor(m.axis));
+   el.innerHTML=`<div class="month">${m.month}</div><h3>${m.title}</h3><div><span class="tag ${m.axis.includes('tech')?'tech':m.axis.includes('aa')?'aa':'hda'}">${axisLabel(m.axis)}</span>${m.axis.includes('project')?'<span class="tag">Projet</span>':''}</div><p>${m.summary}</p><div class="foot"><span class="pill">${m.notions.length} repères</span><button class="ghost openModule">Ouvrir</button></div>`;
+   el.querySelector('.openModule').onclick=()=>openModule(m.id); box.appendChild(el);
+ });
+}
+
+let currentModule=null;
+function openModule(id){
+ currentModule=moduleById(id); if(!currentModule)return;
+ document.getElementById('modalAxis').textContent=axisLabel(currentModule.axis)+(currentModule.axis.includes('project')?' · Projet':'');
+ document.getElementById('modalTitle').textContent=currentModule.title; document.getElementById('modalWhen').textContent=currentModule.month;
+ document.getElementById('modalSummary').textContent=currentModule.summary;
+ document.getElementById('modalNotions').innerHTML=currentModule.notions.map(n=>`<span class="tag">${n}</span>`).join('');
+ document.getElementById('modalChecklist').innerHTML=currentModule.steps.map((s,i)=>{const key=currentModule.id+'_'+i;return `<label class="check"><input type="checkbox" data-step="${key}" ${state.steps[key]?'checked':''}><span>${s}</span></label>`}).join('');
+ document.querySelectorAll('[data-step]').forEach(cb=>cb.onchange=()=>{state.steps[cb.dataset.step]=cb.checked;save()});
+ document.getElementById('modalSource').textContent='';
+ document.getElementById('moduleSeenBtn').textContent=state.seen.includes(id)?'Déjà exploré ✓':'Marquer comme exploré';
+ document.getElementById('moduleModal').classList.add('open');
+}
+function closeModal(){document.getElementById('moduleModal').classList.remove('open')}
+document.getElementById('closeModal').onclick=closeModal; document.getElementById('moduleModal').addEventListener('click',e=>{if(e.target.id==='moduleModal')closeModal()});
+document.getElementById('moduleSeenBtn').onclick=()=>{if(currentModule&&!state.seen.includes(currentModule.id))state.seen.push(currentModule.id);save();renderModules(document.querySelector('.filter.active')?.dataset.filter||'all');document.getElementById('moduleSeenBtn').textContent='Déjà exploré ✓'};
+document.getElementById('moduleReviewBtn').onclick=()=>{if(!currentModule)return;closeModal();startQuiz(currentModule.id)};
+
+function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===id));window.scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('.nav button[data-view]').forEach(b=>b.onclick=()=>showView(b.dataset.view));document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>showView(b.dataset.go));
+document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderModules(b.dataset.filter)});
+document.querySelectorAll('.filterJump').forEach(b=>b.onclick=()=>{showView('year');const f=[...document.querySelectorAll('.filter')].find(x=>x.dataset.filter===b.dataset.axis);if(f)f.click()});
+
+function renderTimeline(){document.getElementById('timelineList').innerHTML=timeline.map(([d,t])=>`<div class="time-row"><div class="time-date">${d}</div><div class="time-content"><strong>${t.split(';')[0]}</strong><small>${t}</small></div></div>`).join('')}
+function renderGlossary(search=''){const s=search.toLowerCase().trim();document.getElementById('glossList').innerHTML=glossary.filter(([a,b])=>(a+' '+b).toLowerCase().includes(s)).map(([a,b])=>`<div class="term"><b>${a}</b><span>${b}</span></div>`).join('')};document.getElementById('glossSearch').oninput=e=>renderGlossary(e.target.value);
+
+function dueScore(q){const r=state.reviews[q.id];if(!r||!r.due)return Number.POSITIVE_INFINITY;return new Date(r.due).getTime()-Date.now()}
+function pickToday(){
+ const now=Date.now();
+ const dueReviewed=quiz.filter(q=>state.reviews[q.id]?.due && new Date(state.reviews[q.id].due).getTime()<=now).sort((a,b)=>dueScore(a)-dueScore(b));
+ const newFromSeen=quiz.filter(q=>!state.reviews[q.id] && state.seen.includes(q.module));
+ const unseen=quiz.filter(q=>!state.reviews[q.id] && !newFromSeen.includes(q));
+ const candidates=[...dueReviewed,...shuffle(newFromSeen),...shuffle(unseen)];
+ const chosen=[]; const usedAxis=new Set();
+ candidates.forEach(q=>{if(chosen.length<6 && !chosen.includes(q) && (!usedAxis.has(q.axis)||chosen.length>=3)){chosen.push(q);usedAxis.add(q.axis)}});
+ candidates.forEach(q=>{if(chosen.length<6&&!chosen.includes(q))chosen.push(q)});
+ return chosen.slice(0,6)
+}
+function renderToday(){const qs=pickToday().slice(0,3);document.getElementById('todayPreview').innerHTML=qs.map(q=>`<div class="mini"><strong>${axisLabel(q.axis)} · ${moduleById(q.module)?.title||''}</strong><span class="small">${q.q}</span></div>`).join('')}
+
+let session=[], qi=0, answered=false;
+function startQuiz(moduleId=null){
+ showView('train');
+ const pool=moduleId?quiz.filter(q=>q.module===moduleId):pickToday();
+ session=pool.length?shuffle(pool).slice(0,6):shuffle(quiz).slice(0,6); qi=0; showQuestion();
+}
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function scheduleReview(q,correct){
+ const previous=state.reviews[q.id]||{};
+ const oldStreak=Number(previous.streak||0);
+ const streak=correct?oldStreak+1:0;
+ const lapses=Number(previous.lapses||0)+(correct?0:1);
+ const intervals=[3,7,21,45,90];
+ const days=correct?intervals[Math.min(Math.max(streak-1,0),intervals.length-1)]:1;
+ const due=new Date(); due.setDate(due.getDate()+days);
+ state.reviews[q.id]={due:due.toISOString(),streak,lapses,interval:days,lastCorrect:correct,lastAnswered:new Date().toISOString()};
+ state.reviewCount=(state.reviewCount||0)+1;
+ if(!state.seen.includes(q.module))state.seen.push(q.module);
+ save();
+ return days;
+}
+function timingText(correct,days){
+ if(!correct)return 'Réactivation programmée automatiquement pour demain.';
+ if(days===3)return 'Réactivation programmée automatiquement dans 3 jours.';
+ return `Réactivation programmée automatiquement dans ${days} jours.`;
+}
+function showQuestion(){
+ if(qi>=session.length){
+   document.getElementById('quizDomain').textContent='Session terminée';
+   document.getElementById('quizCount').textContent='✓';
+   document.getElementById('quizQuestion').textContent='Réactivation terminée. Les prochaines questions seront reproposées automatiquement au bon moment selon tes réponses.';
+   document.getElementById('quizAnswers').innerHTML='<button class="primary" onclick="startQuiz()">Refaire une courte session</button>';
+   document.getElementById('quizFeedback').classList.remove('show');
+   document.getElementById('quizNextWrap').classList.remove('show');
+   return
+ }
+ const q=session[qi]; answered=false;
+ document.getElementById('quizDomain').textContent=axisLabel(q.axis)+' · '+(moduleById(q.module)?.title||'');
+ document.getElementById('quizCount').textContent=(qi+1)+' / '+session.length;
+ document.getElementById('quizQuestion').textContent=q.q;
+ document.getElementById('quizFeedback').classList.remove('show');
+ document.getElementById('quizNextWrap').classList.remove('show');
+ document.getElementById('reviewTiming').textContent='';
+ const order=q.a.map((text,i)=>({text,i})).sort(()=>Math.random()-.5);
+ const ans=document.getElementById('quizAnswers'); ans.innerHTML='';
+ order.forEach(opt=>{const b=document.createElement('button');b.className='answer';b.textContent=opt.text;b.onclick=()=>answer(q,opt.i,b);ans.appendChild(b)});
+}
+function answer(q,i,btn){
+ if(answered)return; answered=true;
+ const correct=i===q.c;
+ document.querySelectorAll('.answer').forEach(b=>b.disabled=true);
+ btn.classList.add(correct?'correct':'wrong');
+ const correctText=q.a[q.c];
+ document.querySelectorAll('.answer').forEach(b=>{if(b.textContent===correctText)b.classList.add('correct')});
+ const days=scheduleReview(q,correct);
+ const fb=document.getElementById('quizFeedback');
+ fb.innerHTML=`<strong>${correct?'À retenir':'On consolide'}</strong><br>${q.fb}`;
+ fb.classList.add('show');
+ document.getElementById('reviewTiming').textContent=timingText(correct,days);
+ document.getElementById('quizNextWrap').classList.add('show');
+ renderToday();
+}
+document.getElementById('nextQuiz').onclick=()=>{if(!answered)return;qi++;showQuestion()};
+document.getElementById('skipQuiz').onclick=()=>{qi++;showQuestion()};
+document.getElementById('startToday').onclick=()=>startQuiz();
+
+function init(){renderModules();renderProgress();renderTimeline();renderGlossary();renderToday()}
+document.getElementById('resetProgress').onclick=()=>{if(confirm('Réinitialiser la progression locale sur cet appareil ?')){localStorage.removeItem('vitrailCompagnonV1');location.reload()}};
+init();
+</script>
+</body>
+</html>
